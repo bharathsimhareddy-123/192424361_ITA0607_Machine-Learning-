@@ -1,0 +1,175 @@
+!apt-get install graphviz -y
+!pip install graphviz
+# ==========================================
+# TEAM H
+# Product Recommendation System using Decision Tree
+# ==========================================
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import DecisionTreeClassifier, export_graphviz
+from sklearn.metrics import accuracy_score, confusion_matrix, ConfusionMatrixDisplay, classification_report
+
+import graphviz
+
+# ------------------------------------------
+# Dataset
+# ------------------------------------------
+
+data = {
+    "Previous_Purchase": [
+        "Electronics","Clothing","Books","Electronics","Books",
+        "Clothing","Electronics","Books","Clothing","Electronics",
+        "Books","Clothing","Electronics","Books","Clothing",
+        "Electronics","Books","Clothing","Electronics","Books"
+    ],
+
+    "Age_Group":[
+        "Young","Adult","Adult","Senior","Young",
+        "Senior","Adult","Young","Adult","Senior",
+        "Senior","Young","Adult","Adult","Senior",
+        "Young","Adult","Senior","Adult","Young"
+    ],
+
+    "Recommended_Product":[
+        "Laptop","Shoes","Novel","Mobile","Comics",
+        "Jacket","Headphones","Story Book","T-Shirt","Tablet",
+        "Dictionary","Jeans","Smart Watch","Magazine","Sweater",
+        "Camera","Guide","Coat","Speaker","Comic Book"
+    ]
+}
+
+df = pd.DataFrame(data)
+
+print("DATASET")
+print(df)
+
+# ------------------------------------------
+# Label Encoding
+# ------------------------------------------
+
+purchase_encoder = LabelEncoder()
+age_encoder = LabelEncoder()
+product_encoder = LabelEncoder()
+
+df["Previous_Purchase"] = purchase_encoder.fit_transform(df["Previous_Purchase"])
+df["Age_Group"] = age_encoder.fit_transform(df["Age_Group"])
+df["Recommended_Product"] = product_encoder.fit_transform(df["Recommended_Product"])
+
+# ------------------------------------------
+# Features and Target
+# ------------------------------------------
+
+X = df[["Previous_Purchase","Age_Group"]]
+y = df["Recommended_Product"]
+
+# ------------------------------------------
+# Train Decision Tree
+# ------------------------------------------
+
+model = DecisionTreeClassifier(
+    criterion="entropy",
+    random_state=42
+)
+
+model.fit(X,y)
+
+# ------------------------------------------
+# Accuracy
+# ------------------------------------------
+
+prediction = model.predict(X)
+
+print("\nAccuracy =",accuracy_score(y,prediction))
+
+print("\nClassification Report")
+print(classification_report(y,prediction))
+
+# ------------------------------------------
+# User Input
+# ------------------------------------------
+
+print("\nAvailable Purchases")
+print(list(purchase_encoder.classes_))
+
+purchase = input("\nEnter Previous Purchase : ")
+
+print("\nAvailable Age Groups")
+print(list(age_encoder.classes_))
+
+age = input("\nEnter Age Group : ")
+
+purchase_value = purchase_encoder.transform([purchase])[0]
+age_value = age_encoder.transform([age])[0]
+
+result = model.predict([[purchase_value,age_value]])
+
+print("\n=================================")
+print("Recommended Product")
+print(product_encoder.inverse_transform(result)[0])
+print("=================================")
+
+# ------------------------------------------
+# Confusion Matrix
+# ------------------------------------------
+
+cm = confusion_matrix(y,prediction)
+
+disp = ConfusionMatrixDisplay(
+    confusion_matrix=cm,
+    display_labels=product_encoder.classes_
+)
+
+plt.figure(figsize=(8,8))
+disp.plot(cmap="Blues")
+plt.title("Confusion Matrix")
+plt.show()
+
+# ------------------------------------------
+# Feature Importance
+# ------------------------------------------
+
+importance = pd.DataFrame({
+    "Feature":["Previous Purchase","Age Group"],
+    "Importance":model.feature_importances_
+})
+
+importance = importance.sort_values(by="Importance",ascending=False)
+
+plt.figure(figsize=(6,4))
+plt.bar(
+    importance["Feature"],
+    importance["Importance"],
+    color=["orange","green"]
+)
+
+plt.title("Feature Importance")
+plt.xlabel("Features")
+plt.ylabel("Importance")
+plt.show()
+
+# ------------------------------------------
+# Decision Tree Diagram
+# ------------------------------------------
+
+dot_data = export_graphviz(
+    model,
+    out_file=None,
+    feature_names=["Previous Purchase","Age Group"],
+    class_names=product_encoder.classes_,
+    filled=True,
+    rounded=True,
+    special_characters=True
+)
+
+graph = graphviz.Source(dot_data)
+
+graph.format = "png"
+
+graph.render("Decision_Tree")
+
+print("\nDecision Tree Image Saved Successfully!")
+
+graph
