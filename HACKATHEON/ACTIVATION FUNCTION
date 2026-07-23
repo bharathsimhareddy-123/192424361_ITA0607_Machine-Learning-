@@ -1,0 +1,65 @@
+#Activation Function TANH :
+import numpy as np
+# Input values
+x = np.array([-3, -2, -1, 0, 1, 2, 3])
+# Apply Tanh activation function
+output = np.tanh(x)
+print("Input Values:")
+print(x)
+print("\nTanh Output:")
+print(output)
+#Activation Function ReLu :
+import numpy as np
+# Input values
+x = np.array([-5, -2, 0, 3, 7])
+# Apply ReLU activation function
+relu_output = np.maximum(0, x)
+print("Input Values:")
+print(x)
+print("\nReLU Output:")
+print(relu_output)
+#(or)
+import numpy as np
+marks = np.array([-10, 20, 50, -30, 80])
+relu_marks = np.maximum(0, marks)
+print("Original Marks :", marks)
+print("After ReLU     :", relu_marks)
+#Activation Function Sigmoid :
+import numpy as np
+# Input values
+x = np.array([-5, -2, 0, 2, 5])
+# Apply Sigmoid activation function
+sigmoid_output = 1 / (1 + np.exp(-x))
+print("Input Values:")
+print(x)
+print("\nSigmoid Output:")
+print(sigmoid_output)
+#Activation Function SOFTMAX :
+import numpy as np
+marks = np.array([85, 70, 60])
+softmax = np.exp(marks) / np.sum(np.exp(marks))
+print("Scores :", marks)
+print("Softmax:", softmax)
+
+OUTPUT:
+
+Input Values:
+[-3 -2 -1  0  1  2  3]
+
+Tanh Output:
+[-0.99505475 -0.96402758 -0.76159416  0.          0.76159416  0.96402758
+  0.99505475]
+Input Values:
+[-5 -2  0  3  7]
+
+ReLU Output:
+[0 0 0 3 7]
+Original Marks : [-10  20  50 -30  80]
+After ReLU     : [ 0 20 50  0 80]
+Input Values:
+[-5 -2  0  2  5]
+
+Sigmoid Output:
+[0.00669285 0.11920292 0.5        0.88079708 0.99330715]
+Scores : [85 70 60]
+Softmax: [9.99999694e-01 3.05902227e-07 1.38879396e-11]
